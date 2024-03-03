@@ -73,8 +73,6 @@ for param, value in best_params.items():
 
 ## Methods
 
-<div class="method-table">
-
 | Method                                                                          | Description                                                           |
 |---------------------------------------------------------------------------------|-----------------------------------------------------------------------|
 | `initialize_population(population_size: int) -> list`                           | Initialize a population of individuals with random hyperparameters.   |
@@ -83,28 +81,6 @@ for param, value in best_params.items():
 | `calculate_fitness(train_set: list, eval_set: list, parameters: dict) -> float` | Evaluate the fitness (scoring metric) of a set of hyperparameters.    |
 | `fit(train_set: list, eval_set: list = None, direction: str = "maximize")`      | Fit the GeneticTuner on the training set and optional evaluation set. |
 
-</div>
-
-<style>
-.method-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-.method-table th, .method-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.method-table th {
-    background-color: #f2f2f2;
-}
-
-.method-table tr:hover {
-    background-color: #f5f5f5;
-}
-</style>
 
 ## Example
 An example script demonstrating the usage of the GeneticTuner class is provided in the example.py file.
