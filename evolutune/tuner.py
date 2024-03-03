@@ -2,6 +2,7 @@ import numpy as np
 from joblib import Parallel, delayed
 from sklearn.metrics import get_scorer
 import random
+import warnings
 
 
 class GeneticTuner:
@@ -56,7 +57,14 @@ class GeneticTuner:
         """
         # Set the random seed
         if random_state is not None:
+            # Issue a warning about setting a random seed
+            message = ("Setting a random seed can be beneficial for reproducibility, "
+                       "but it goes against the algorithm's nature. Consider trying multiple seeds.")
+            warnings.warn(message, UserWarning, stacklevel=2)
             np.random.seed(random_state)
+            random.seed(random_state)
+            Parallel(n_jobs=n_jobs, backend="loky")(delayed(np.random.seed)(random_state + i) for i in range(population_size))
+
         # Initializations for genetic algorithm
         self.model = model
         self.param_grid = param_grid
@@ -81,6 +89,16 @@ class GeneticTuner:
         list of individuals, each represented as a dictionary of hyperparameters.
 
         """
+        # Calculate the total number of possible combinations
+        total_combinations = 1
+        for values in self.param_grid.values():
+            total_combinations *= len(values)
+
+        # Check if the population size exceeds the total number of combinations
+        if population_size > total_combinations:
+            warnings.warn("Warning: Population size exceeds the total number of possible combinations.")
+
+        # Initialize the population
         return [{key: random.choice(values) for key, values in self.param_grid.items()} for _ in range(population_size)]
 
     def crossover(self, parent1: dict, parent2: dict) -> tuple:
