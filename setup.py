@@ -5,7 +5,7 @@ this_directory = Path(__file__).parent
 
 VERSION = '0.0.1'
 DESCRIPTION = 'A Genetic Algorithm-based hyperparameter tuner for machine learning models.'
-LONG_DESCRIPTION = (this_directory / "evolutune/README.md").read_text()
+LONG_DESCRIPTION = (this_directory / "README.md").read_text()
 
 
 # Setting up

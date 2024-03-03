@@ -153,3 +153,4 @@ cython_debug/
 
 # Files
 tests/
+evolutune.egg-info/

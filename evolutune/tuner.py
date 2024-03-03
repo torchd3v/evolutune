@@ -148,7 +148,7 @@ class GeneticTuner:
             The fitness score of the hyperparameters.
 
         """
-        # Create a Decision Tree model
+        # Create a model
         f_model = self.model.set_params(**parameters)
         # Fit the model on the training data
         f_model.fit(train_set[0], train_set[1])
