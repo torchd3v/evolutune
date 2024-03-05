@@ -40,7 +40,8 @@ dt_model = DecisionTreeClassifier(random_state=42)
 tuner = GeneticTuner(dt_model,
                      param_grid=hyperparameter_space,
                      scoring="accuracy",
-                     n_jobs=-1)
+                     n_jobs=-1,
+                     cv=3)
 
 # Fitting the tuner instance for parameters
 tuner.fit(train_set=[X_train, y_train],

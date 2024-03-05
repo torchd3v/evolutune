@@ -1,12 +1,13 @@
 import numpy as np
 from joblib import Parallel, delayed
 from sklearn.metrics import get_scorer
+from sklearn.model_selection import cross_val_score
 import random
 import warnings
 
 
 class GeneticTuner:
-    def __init__(self, model, param_grid, scoring, population_size=10, generations=100, mutation_rate=0.1,
+    def __init__(self, model, param_grid, scoring, population_size=10, generations=100, mutation_rate=0.1, cv=None,
                  random_state=None, n_jobs=None):
         """
         A Genetic Algorithm-based hyperparameter tuner for machine learning models.
@@ -27,6 +28,8 @@ class GeneticTuner:
             The probability of a mutation occurring during crossover.
         random_state : int or None, optional, default: None
             Seed for reproducibility.
+        cv : int or None, optional, default: None
+            The number of cross validation during fitness evaluation.
         n_jobs : int or None, optional, default: None
             The number of parallel jobs to run during fitness evaluation.
 
@@ -63,7 +66,8 @@ class GeneticTuner:
             warnings.warn(message, UserWarning, stacklevel=2)
             np.random.seed(random_state)
             random.seed(random_state)
-            Parallel(n_jobs=n_jobs, backend="loky")(delayed(np.random.seed)(random_state + i) for i in range(population_size))
+            Parallel(n_jobs=n_jobs, backend="loky")(
+                delayed(np.random.seed)(random_state + i) for i in range(population_size))
 
         # Initializations for genetic algorithm
         self.model = model
@@ -72,6 +76,7 @@ class GeneticTuner:
         self.population_size = population_size
         self.generations = generations
         self.mutation_rate = mutation_rate
+        self.cv = cv
         self.n_jobs = n_jobs
 
     # Genetic Algorithm functions
@@ -168,13 +173,19 @@ class GeneticTuner:
         """
         # Create a model
         f_model = self.model.set_params(**parameters)
-        # Fit the model on the training data
-        f_model.fit(train_set[0], train_set[1])
-        # Evaluate the model
-        scorer = get_scorer(self.scoring)
-        score = scorer(f_model, train_set[0], train_set[1]) if eval_set is None else scorer(f_model, eval_set[0],
-                                                                                            eval_set[1])
-        return score
+        if self.cv is not None:
+            # Evaluate the model
+            return np.mean(cross_val_score(f_model, train_set[0], train_set[1], cv=self.cv, scoring=self.scoring))
+        else:
+            # Get scorer
+            scorer = get_scorer(self.scoring)
+            # Fit the model on the training data
+            f_model.fit(train_set[0], train_set[1])
+            # Evaluate the model
+            if eval_set is None:
+                return scorer(f_model, train_set[0], train_set[1])
+            else:
+                return scorer(f_model, eval_set[0], eval_set[1])
 
     def fit(self, train_set: list, eval_set: list = None, direction: str = "maximize"):
         """
