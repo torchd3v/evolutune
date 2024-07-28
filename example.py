@@ -2,6 +2,7 @@ from evolutune.tuner import GeneticTuner
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import StratifiedKFold
 
 hyperparameter_space = {
     'criterion': ['gini', 'entropy'],  # Splitting criterion
@@ -31,17 +32,20 @@ X = titanic_df.drop('Survived', axis=1)
 y = titanic_df['Survived']
 
 # Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
 # Initialize the Decision Tree Classifier
 dt_model = DecisionTreeClassifier(random_state=42)
+
+# Initialize the Cross Validator
+skf = StratifiedKFold(n_splits=3)
 
 # Initialize the Genetic Tuner
 tuner = GeneticTuner(dt_model,
                      param_grid=hyperparameter_space,
                      scoring="accuracy",
                      n_jobs=-1,
-                     cv=3)
+                     cv=skf)
 
 # Fitting the tuner instance for parameters
 tuner.fit(train_set=[X_train, y_train],

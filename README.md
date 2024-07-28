@@ -42,6 +42,7 @@ genetic_tuner = GeneticTuner(
     generations=100,
     mutation_rate=0.1,
     random_state=None,
+    cv=None,
     n_jobs=None
 )
 ```
