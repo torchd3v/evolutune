@@ -3,8 +3,8 @@ from pathlib import Path
 
 this_directory = Path(__file__).parent
 
-VERSION = '0.0.3'
-DESCRIPTION = 'A Genetic Algorithm-based hyperparameter tuner for machine learning models.'
+VERSION = '0.0.4'
+DESCRIPTION = 'A hyperparameter tuning library for machine learning models based on evolutionary algorithms.'
 LONG_DESCRIPTION = (this_directory / "README.md").read_text()
 
 
