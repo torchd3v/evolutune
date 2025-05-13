@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import StratifiedKFold
+import time
 
 hyperparameter_space = {
     'criterion': ['gini', 'entropy'],  # Splitting criterion
@@ -41,16 +42,47 @@ dt_model = DecisionTreeClassifier(random_state=42)
 skf = StratifiedKFold(n_splits=3)
 
 # Initialize the Genetic Tuner
-tuner = GeneticTuner(dt_model,
-                     param_grid=hyperparameter_space,
-                     scoring="accuracy",
-                     n_jobs=-1,
-                     cv=skf)
+genetic_tuner = GeneticTuner(
+    model=dt_model,
+    param_grid=hyperparameter_space,
+    scoring="accuracy",
+    population_size=20,  # Comparable to n_particles in PSO
+    generations=50,      # Comparable to iterations in PSO
+    mutation_rate=0.1,   # Genetic Algorithm specific parameter
+    cv=skf,
+    n_jobs=-1,
+    random_state=42
+)
+
+# Measure the time it takes to run Genetic Algorithm
+start_time = time.time()
 
 # Fitting the tuner instance for parameters
-tuner.fit(train_set=[X_train, y_train],
-          eval_set=[X_test, y_test],
-          direction="maximize")
+genetic_tuner.fit(
+    train_set=[X_train, y_train],
+    eval_set=[X_test, y_test],
+    direction="maximize"
+)
 
-print(tuner.best_params_)
-print(tuner.best_score_)
+# Calculate elapsed time
+ga_time = time.time() - start_time
+print(f"Genetic Algorithm optimization completed in {ga_time:.2f} seconds")
+
+# Print the best hyperparameters and score
+print("\nBest Hyperparameters found by Genetic Algorithm:")
+for param, value in genetic_tuner.best_params_.items():
+    print(f"{param}: {value}")
+print(f"\nBest Score: {genetic_tuner.best_score_:.4f}")
+
+# Create and evaluate the model with the best hyperparameters
+best_model = dt_model.set_params(**genetic_tuner.best_params_)
+best_model.fit(X_train, y_train)
+test_score = best_model.score(X_test, y_test)
+print(f"Test accuracy with best parameters: {test_score:.4f}")
+
+# Compare with default parameters
+default_model = DecisionTreeClassifier(random_state=42)
+default_model.fit(X_train, y_train)
+default_score = default_model.score(X_test, y_test)
+print(f"Test accuracy with default parameters: {default_score:.4f}")
+print(f"Improvement: {(test_score - default_score) * 100:.2f}%")

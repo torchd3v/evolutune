@@ -18,8 +18,8 @@ setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
     packages=find_packages(),
-    install_requires=['numpy==1.23.5', 'joblib==1.2.0', 'scikit-learn==1.2.2'],
-    keywords=['python', 'hyperparameter', 'tuning', 'genetic-algorithm', 'model', 'search', 'CV'],
+    install_requires=['numpy', 'joblib', 'scikit-learn'],
+    keywords=['python', 'hyperparameter', 'tuning', 'genetic-algorithm', 'model', 'search', 'CV', 'evolutionary-algorithm', 'particle-swarm-optimization'],
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",

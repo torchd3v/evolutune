@@ -1,3 +1,3 @@
-from .tuner import GeneticTuner
+from .tuner import GeneticTuner, PSOTuner
 
-__all__ = ["GeneticTuner"]
+__all__ = ["GeneticTuner", "PSOTuner"]
